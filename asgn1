@@ -1,0 +1,7 @@
+1. File: dept_salary.txt. The first column has the id of a dept and the second column a salary amount. Write a map-reduce program to get the minimum salary per department. (5)
+
+2. File: shakespeare_100.txt. In the Word count example we output all words with their count. What if I only wanted the words with top 10 counts (This is very common problem in the industry). Think about using multiple map-reduce steps (5)
+
+Optional:
+
+ File: dept_course.txt. The first column is studentID, the second column is Dept, and the third column is Course. Write a map-reduce job to identify students who belong to "Math" course or "QA" department.
