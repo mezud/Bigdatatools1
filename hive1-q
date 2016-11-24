@@ -1,0 +1,32 @@
+Dataset:
+
+We are going to use the Dataset : movelens_less.zip  (The entire dataset is available here Dataset and Scripts -> Movielens & IMDB-> movielens.zip. I selected a 2 files for this assignment)
+Unzip the movielens_less.zip. 
+The README file in the zip file will give you information of the project that collected the data
+The zip contains files: u.data and u.user
+u.data     -- The dataset has 100000 ratings by 943 users on 1682 movies.   The file has 4 tab  ("\t") separated columns.  The first column is the user id, the second column is the movie id, the third column is the rating, and  the fourth column is a timestamp.
+
+u.user - Demographic information about the users; this has 5 pipe "|" separated  columns. the first column is the user id, the second column is the age, the third column is the gender (Male denoted by 'M' and Female denoted by 'F'), fourth column is the occupation, and  the fifth column is the zip code. The user ids are the ones used in the u.data data set.
+Copy u.data and u.user to the virtual machine (Filezilla)
+Copy u.data and u.user from virtual machine into HDFS (hadoop fs -put)
+Create one table for u.data and one table for u.user in Hive
+Submission:
+
+1. Submit both the hive commands and the results (copy it into a file and submit)
+
+Example: if you submit a file called assignment1.txt. It should contain the following information for every question. 
+
+Question XX: (XX is the question number)
+
+HiveQL: Select count (*) from u.data;
+
+Result: 100000
+
+2. Submit using Assessment -> Assignments -> Assignment 2 - Hive
+
+Assignment (Total of 10)
+
+Find the user id who has rated the most number of movies (3)
+Find average rating  received by movie with id 178. (3)
+The users belonging to which 3 occupations provided the most number of ratings (2)
+How many unique male users provided at least one rating of 5 (2)
