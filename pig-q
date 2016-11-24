@@ -1,0 +1,28 @@
+Datasets:
+
+full_text_clean.txt: (userid, lat, lon, tweet, modified_lat, modified_lon) [[D2L -> Assignment 3 – Pig -> full_text_clean.txt]
+cities_clean.txt: (city_name, lat, lon, modified_lat, modified_lon) [D2L -> Assignment 3 – Pig -> cities_clean.txt]
+Copy full_text_clean.txt and cities_clean.txt to the virtual machine (Filezilla)
+Copy full_text_clean.txt and cities_clean.txt from virtual machine into HDFS (hadoop fs -put)
+Submission:
+
+Submit the pig commands (copy it into a file and submit)
+Submit using Assessment -> Dropbox -> Pig Assignment 3
+Assignment (Total of 10)
+
+1) Get a 10% sample from full_text_clean.txt and store results in full_text_small.txt (2)
+
+2) Find the top 3 words used in tweets from file  full_text_clean.txt (2)
+
+3) Calculate total number of records in cities_clean.txt file  (2)
+
+4) Find closest city for each tweet (4)
+
+Hint:
+
+The lat-lon in full_text_clean.txt file doesn’t match directly with the lat-lon of the cities in cities_clean.txt file. For that purpose, I have pre-processed both files to include a modified lat and lon column (last two columns of both files). So for each of geo-tagged tweets, you will map to multiple nearby cities using the last two columns of both files.  After that, for each geo-tagged tweet, you then calculate the distance using the actual lat-lon values and pick the closest city.
+Calculating Euclidean Distance (pig example)
+SQRT((lat_1 – lat_2) * (lat_1 – lat_2) + (lon_1 – lon_2) * (lon_1 – lon_2))
+Lat_1/Lon_1 refer to lat/lon in full_text_clean.txt
+Lat_2/Lon_2 refer to lat/lon in cities_clean.txt
+ 
