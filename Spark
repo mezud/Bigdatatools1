@@ -1,0 +1,60 @@
+In [4]:
+nm=sc.textFile("/user/root/integer_list.txt")
+In [13]:
+even = nm.filter(lambda number:int(number)%2==0 )
+In [14]:
+even.count()
+In [11]:
+nm.count()
+In [16]:
+odd = nm.filter(lambda number:int(number)%2!=0 )
+In [17]:
+odd.count()
+In [ ]:
+Out[14]:
+510
+Out[11]:
+1001
+Out[17]:
+491
+In [23]:
+dept_salary=sc.textFile("/user/root/dept_salary.txt")
+In [24]:
+k=dept_salary.map(lambda line: line.split())
+In [62]:
+v=k.map(lambda fields: (fields[0], int(fields[1])))
+In [63]:
+u=v.reduceByKey(lambda x,y:x+y)
+In [64]:
+u.take(10)
+In [ ]:
+In [ ]:
+Out[64]:
+[(u'QA', 3360624),
+(u'Marketing', 3158454),
+(u'Research', 3333284),
+(u'Sales', 3471781),
+(u'Developer', 3221394)]
+In [11]:
+text=sc.textFile("/user/root/shakespeare_100.txt")
+In [2]:
+words = text.flatMap(lambda line: line.split())
+In [12]:
+wordWithCount = words.map(lambda word: (word, 1))
+In [14]:
+c=wordWithCount.reduceByKey(lambda v1,v2: v1+v2)
+In [25]:
+order_asc=c.takeOrdered(10, key = lambda x: x[1])
+In [26]:
+print(order_asc)
+In [27]:
+order_dsc=c.takeOrdered(10, key = lambda x: -x[1])
+In [28]:
+print(order_dsc)
+In [ ]:
+[(u'considered-', 1), (u'mustachio', 1), (u'protested,', 1), (u'offendeth',
+1), (u'instant;', 1), (u'Sergeant.', 1), (u'nunnery', 1), (u'swoopstake', 1
+), (u'unnecessarily', 1), (u'out-night', 1)]
+[(u'the', 23407), (u'I', 19540), (u'and', 18358), (u'to', 15682), (u'of', 1
+5649), (u'a', 12586), (u'my', 10825), (u'in', 9633), (u'you', 9129), (u'is'
+, 7874)]
