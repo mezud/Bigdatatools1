@@ -1,0 +1,122 @@
+
+
+
+Question 1
+
+select user_id, COUNT(*) as cnt
+    > from u_data
+    > group by user_id
+    > order by cnt desc
+    > limit 5;
+Query ID = root_20161011155933_034cfcd9-7b3e-4a37-93b1-bfdb4fc86a49
+Total jobs = 1
+Launching Job 1 out of 1
+
+
+Status: Running (Executing on YARN cluster with App id application_1476144514459_0014)
+
+--------------------------------------------------------------------------------
+        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+--------------------------------------------------------------------------------
+Map 1 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 2 ......   SUCCEEDED      1          1        0        0       0       0
+Reducer 3 ......   SUCCEEDED      1          1        0        0       0       0
+--------------------------------------------------------------------------------
+VERTICES: 03/03  [==========================>>] 100%  ELAPSED TIME: 18.58 s    
+--------------------------------------------------------------------------------
+OK
+405	737
+655	685
+13	636
+450	540
+276	518
+
+Question 2
+
+select AVG(u_data.rating)
+    > from u_data
+    > where movie_id = '178'
+    > ;
+Query ID = root_20161011041034_86300754-82ad-4ee3-9341-0c921251dbd6
+Total jobs = 1
+Launching Job 1 out of 1
+Tez session was closed. Reopening...
+Session re-established.
+
+
+Status: Running (Executing on YARN cluster with App id application_1476144514459_0010)
+
+--------------------------------------------------------------------------------
+        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+--------------------------------------------------------------------------------
+Map 1 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 2 ......   SUCCEEDED      1          1        0        0       0       0
+--------------------------------------------------------------------------------
+VERTICES: 02/02  [==========================>>] 100%  ELAPSED TIME: 15.36 s    
+--------------------------------------------------------------------------------
+OK
+4.344
+
+
+Question 3
+
+select u_user.occupation,COUNT(u_data.rating) as cnt
+    > from u_data
+    > join u_user
+    > on u_data.user_id=u_user.user_id
+    > group by occupation
+    > order by cnt desc
+    > limit 3;
+Query ID = root_20161011161315_dca95b5c-9b20-48c9-9213-ab19113047b6
+Total jobs = 1
+Launching Job 1 out of 1
+Tez session was closed. Reopening...
+Session re-established.
+
+
+Status: Running (Executing on YARN cluster with App id application_1476144514459_0015)
+
+--------------------------------------------------------------------------------
+        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+--------------------------------------------------------------------------------
+Map 1 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 4 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 2 ......   SUCCEEDED      1          1        0        0       0       0
+Reducer 3 ......   SUCCEEDED      1          1        0        0       0       0
+--------------------------------------------------------------------------------
+VERTICES: 04/04  [==========================>>] 100%  ELAPSED TIME: 30.59 s    
+--------------------------------------------------------------------------------
+OK
+student	21957
+other	10663
+educator	9442
+
+Question 4
+
+select count(distinct u_data.user_id) as cnt
+    > from u_data
+    > join u_user
+    > on u_data.user_id=u_user.user_id
+    > where u_user.gender='M' 
+    > and u_data.rating='5'
+    > ;
+
+Query ID = root_20161011163513_ea359965-6511-4261-a887-8b5434257d3e
+Total jobs = 1
+Launching Job 1 out of 1
+
+
+Status: Running (Executing on YARN cluster with App id application_1476144514459_0016)
+
+--------------------------------------------------------------------------------
+        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+--------------------------------------------------------------------------------
+Map 1 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 3 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 2 ......   SUCCEEDED      1          1        0        0       0       0
+--------------------------------------------------------------------------------
+VERTICES: 03/03  [==========================>>] 100%  ELAPSED TIME: 22.63 s    
+--------------------------------------------------------------------------------
+OK
+657
+Time taken: 29.59 seconds, Fetched: 1 row(s)
