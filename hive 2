@@ -1,0 +1,477 @@
+4j.properties
+hive> create database hive2;
+OK
+Time taken: 5.975 seconds
+hive> use hive2;
+OK
+
+#1
+Time taken: 5.578 seconds
+hive> create table movies_whole(
+    > movie_id string,
+    > movie_name string,
+    > genre string)
+    > row format delimited
+    > fields terminated by '\t';
+OK
+Time taken: 3.093 seconds
+
+#2
+hive> load data inpath '/user/root/action_comedy_thriller' overwrite into table movies_whole;
+Loading data to table hive2.movies_whole
+Table hive2.movies_whole stats: [numFiles=1, totalSize=30941]
+OK
+Time taken: 3.208 seconds
+hive> select * from movies_whole
+    > limit 3;
+OK
+1	Toy Story (1995)	Comedy
+2	GoldenEye (1995)	Thriller
+3	Four Rooms (1995)	Thriller
+Time taken: 2.674 seconds, Fetched: 3 row(s)
+
+#3
+hive> create table movies_part(
+    > movie_id string,
+    > movie_name VARCHAR(64))
+    > PARTITIONED BY(genre string);
+OK
+Time taken: 1.983 seconds
+
+#4
+hive> load data inpath'/user/root/action'
+    > into table movies_part
+    > partition(genre='action');
+Loading data to table hive2.movies_part partition (genre=action)
+Partition hive2.movies_part{genre=action} stats: [numFiles=1, numRows=0, totalSize=4702, rawDataSize=0]
+OK
+Time taken: 7.166 seconds
+Time taken: 7.166 seconds
+hive> load data inpath'/user/root/comedy'
+    > into table movies_part
+    > partition(genre='comedy');
+Loading data to table hive2.movies_part partition (genre=comedy)
+Partition hive2.movies_part{genre=comedy} stats: [numFiles=1, numRows=0, totalSize=13187, rawDataSize=0]
+OK
+Time taken: 6.187 seconds
+hive> load data inpath'/user/root/thriller'
+    > into table movies_part
+    > partition(genre='thriller');
+Loading data to table hive2.movies_part partition (genre=thriller)
+Partition hive2.movies_part{genre=thriller} stats: [numFiles=1, numRows=0, totalSize=6397, rawDataSize=0]
+OK
+Time taken: 6.22 seconds
+hive> 
+#5
+hive> describe extended movies_part;
+OK
+movie_id            	string              	                    
+movie_name          	varchar(64)         	                    
+genre               	string              	                    
+	 	 
+# Partition Information	 	 
+# col_name            	data_type           	comment             
+	 	 
+genre               	string              	                    
+	 	 
+Detailed Table Information	Table(tableName:movies_part, dbName:hive2, owner:root, createTime:1477445929, lastAccessTime:0, retention:0, sd:StorageDescriptor(cols:[FieldSchema(name:movie_id, type:string, comment:null), FieldSchema(name:movie_name, type:varchar(64), comment:null), FieldSchema(name:genre, type:string, comment:null)], location:hdfs://sandbox.hortonworks.com:8020/apps/hive/warehouse/hive2.db/movies_part, inputFormat:org.apache.hadoop.mapred.TextInputFormat, outputFormat:org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat, compressed:false, numBuckets:-1, serdeInfo:SerDeInfo(name:null, serializationLib:org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, parameters:{serialization.format=1}), bucketCols:[], sortCols:[], parameters:{}, skewedInfo:SkewedInfo(skewedColNames:[], skewedColValues:[], skewedColValueLocationMaps:{}), storedAsSubDirectories:false), partitionKeys:[FieldSchema(name:genre, type:string, comment:null)], parameters:{transient_lastDdlTime=1477445929}, viewOriginalText:null, viewExpandedText:null, tableType:MANAGED_TABLE)	
+Time taken: 0.63 seconds, Fetched: 10 row(s)
+#6
+hive> dfs -ls /apps/hive/warehouse/hive2.db
+    > ;
+Found 3 items
+drwxrwxrwx   - root hdfs          0 2016-10-26 02:01 /apps/hive/warehouse/hive2.db/movies_part
+drwxrwxrwx   - root hdfs          0 2016-10-26 01:56 /apps/hive/warehouse/hive2.db/movies_part1
+drwxrwxrwx   - root hdfs          0 2016-10-26 01:34 /apps/hive/warehouse/hive2.db/movies_whole
+hive> dfs -ls /apps/hive/warehouse/hive2.db/movies_part;
+Found 3 items
+drwxrwxrwx   - root hdfs          0 2016-10-26 01:58 /apps/hive/warehouse/hive2.db/movies_part/genre=action
+drwxrwxrwx   - root hdfs          0 2016-10-26 02:00 /apps/hive/warehouse/hive2.db/movies_part/genre=comedy
+drwxrwxrwx   - root hdfs          0 2016-10-26 02:01 /apps/hive/warehouse/hive2.db/movies_part/genre=thriller
+hive> 
+
+#7(a)
+hive> select * from movies_whole limit 20;
+OK
+1	Toy Story (1995)	Comedy
+2	GoldenEye (1995)	Thriller
+3	Four Rooms (1995)	Thriller
+4	Get Shorty (1995)	Action
+5	Copycat (1995)	Thriller
+8	Babe (1995)	Comedy
+11	Seven (Se7en) (1995)	Thriller
+12	Usual Suspects, The (1995)	Thriller
+13	Mighty Aphrodite (1995)	Comedy
+16	French Twist (Gazon maudit) (1995)	Comedy
+17	From Dusk Till Dawn (1996)	Thriller
+21	Muppet Treasure Island (1996)	Thriller
+22	Braveheart (1995)	Action
+23	Taxi Driver (1976)	Thriller
+24	Rumble in the Bronx (1995)	Action
+25	Birdcage, The (1996)	Comedy
+26	Brothers McMullen, The (1995)	Comedy
+27	Bad Boys (1995)	Action
+28	Apollo 13 (1995)	Thriller
+29	Batman Forever (1995)	Action
+Time taken: 1.788 seconds, Fetched: 20 row(s)
+hive> select * from movies_part limit 20;
+OK
+4	Get Shorty (1995)	NULL	action
+22	Braveheart (1995)	NULL	action
+24	Rumble in the Bronx (1995)	NULL	action
+27	Bad Boys (1995)	NULL	action
+29	Batman Forever (1995)	NULL	action
+39	Strange Days (1995)	NULL	action
+50	Star Wars (1977)	NULL	action
+62	Stargate (1994)	NULL	action
+73	Maverick (1994)	NULL	action
+74	Faster Pussycat! Kill! Kill! (1965)	NULL	action
+80	Hot Shots! Part Deux (1993)	NULL	action
+82	Jurassic Park (1993)	NULL	action
+92	True Romance (1993)	NULL	action
+101	Heavy Metal (1981)	NULL	action
+110	Operation Dumbo Drop (1995)	NULL	action
+121	Independence Day (ID4) (1996)	NULL	action
+127	Godfather, The (1972)	NULL	action
+148	Ghost and the Darkness, The (1996)	NULL	action
+161	Top Gun (1986)	NULL	action
+172	Empire Strikes Back, The (1980)	NULL	action
+Time taken: 7.323 seconds, Fetched: 20 row(s)
+hive> 
+
+#7(b)
+hive> select count(*) as cnt
+    > from movies_whole 
+    > where genre="Action";
+Query ID = root_20161026021435_fb2d1af0-40ca-47d1-b781-2b9c7a76059b
+Total jobs = 1
+Launching Job 1 out of 1
+
+
+Status: Running (Executing on YARN cluster with App id application_1477080051540_0014)
+
+--------------------------------------------------------------------------------
+        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+--------------------------------------------------------------------------------
+Map 1 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 2 ......   SUCCEEDED      1          1        0        0       0       0
+--------------------------------------------------------------------------------
+VERTICES: 02/02  [==========================>>] 100%  ELAPSED TIME: 11.62 s    
+--------------------------------------------------------------------------------
+OK
+167
+Time taken: 14.589 seconds, Fetched: 1 row(s)
+hive> 
+hive> select count(*) as cnt
+    > from movies_part 
+    > where genre="action";
+Query ID = root_20161026021617_c8c85cf3-9503-4ede-bbc6-511e3c45572f
+Total jobs = 1
+Launching Job 1 out of 1
+
+
+Status: Running (Executing on YARN cluster with App id application_1477080051540_0014)
+
+--------------------------------------------------------------------------------
+        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+--------------------------------------------------------------------------------
+Map 1 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 2 ......   SUCCEEDED      1          1        0        0       0       0
+--------------------------------------------------------------------------------
+VERTICES: 02/02  [==========================>>] 100%  ELAPSED TIME: 7.69 s     
+--------------------------------------------------------------------------------
+OK
+167
+Time taken: 9.778 seconds, Fetched: 1 row(s)
+hive> 
+
+#7(c)
+hive> select count(*) from movies_whole;
+Query ID = root_20161026022006_5bf52426-524a-4bfd-a8a7-f5ff926a7090
+Total jobs = 1
+Launching Job 1 out of 1
+
+
+Status: Running (Executing on YARN cluster with App id application_1477080051540_0014)
+
+--------------------------------------------------------------------------------
+        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+--------------------------------------------------------------------------------
+Map 1 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 2 ......   SUCCEEDED      1          1        0        0       0       0
+--------------------------------------------------------------------------------
+VERTICES: 02/02  [==========================>>] 100%  ELAPSED TIME: 10.99 s    
+--------------------------------------------------------------------------------
+OK
+879
+Time taken: 14.016 seconds, Fetched: 1 row(s)
+hive> select count(*) from movies_part;
+Query ID = root_20161026022030_31476a0f-9750-4d4b-bb0f-cc9f6a14c536
+Total jobs = 1
+Launching Job 1 out of 1
+
+
+Status: Running (Executing on YARN cluster with App id application_1477080051540_0014)
+
+--------------------------------------------------------------------------------
+        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+--------------------------------------------------------------------------------
+Map 1 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 2 ......   SUCCEEDED      1          1        0        0       0       0
+--------------------------------------------------------------------------------
+VERTICES: 02/02  [==========================>>] 100%  ELAPSED TIME: 0.63 s     
+--------------------------------------------------------------------------------
+OK
+879
+Time taken: 10.455 seconds, Fetched: 1 row(s)
+hive> 
+#7(d)
+
+hive> select t.year,count(*) as count 
+    > from (Select regexp_extract(movie_name,'([1-2][0-9][0-9][0-9])',1) as year
+    > from movies_whole) t group by year 
+    > order by count
+    > desc limit 5;
+Query ID = root_20161026022658_f799b06b-ee62-4c16-865a-31efba1492bb
+Total jobs = 1
+Launching Job 1 out of 1
+Tez session was closed. Reopening...
+Session re-established.
+
+
+Status: Running (Executing on YARN cluster with App id application_1477080051540_0015)
+
+--------------------------------------------------------------------------------
+        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+--------------------------------------------------------------------------------
+Map 1 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 2 ......   SUCCEEDED      1          1        0        0       0       0
+Reducer 3 ......   SUCCEEDED      1          1        0        0       0       0
+--------------------------------------------------------------------------------
+VERTICES: 03/03  [==========================>>] 100%  ELAPSED TIME: 11.11 s    
+--------------------------------------------------------------------------------
+OK
+1996	164
+1995	145
+1994	133
+1997	133
+1993	69
+Time taken: 29.216 seconds, Fetched: 5 row(s)
+hive> select t.year,count(*) as count 
+    > from (Select regexp_extract(movie_name,'([1-2][0-9][0-9][0-9])',1) as year
+    > from movies_part) t group by year 
+    > order by count
+    > desc limit 5;
+Query ID = root_20161026023027_2e47e6a6-714b-4cb9-9369-0bf5879f7e20
+Total jobs = 1
+Launching Job 1 out of 1
+
+
+Status: Running (Executing on YARN cluster with App id application_1477080051540_0015)
+
+--------------------------------------------------------------------------------
+        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+--------------------------------------------------------------------------------
+Map 1 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 2 ......   SUCCEEDED      1          1        0        0       0       0
+Reducer 3 ......   SUCCEEDED      1          1        0        0       0       0
+--------------------------------------------------------------------------------
+VERTICES: 03/03  [==========================>>] 100%  ELAPSED TIME: 11.75 s    
+--------------------------------------------------------------------------------
+OK
+NULL	879
+Time taken: 20.085 seconds, Fetched: 1 row(s)
+hive> 
+
+#7(e)
+
+hive> select t.year,count(*) as count 
+    > from (Select regexp_extract(movie_name,'([1-2][0-9][0-9][0-9])',1) as year
+    > from movies_whole where genre="Thriller") t group by year 
+    > order by count
+    > desc limit 5;
+Query ID = root_20161026023627_51a7a885-9545-4ba3-8326-5ab310e4920b
+Total jobs = 1
+Launching Job 1 out of 1
+Tez session was closed. Reopening...
+Session re-established.
+
+
+Status: Running (Executing on YARN cluster with App id application_1477080051540_0016)
+
+--------------------------------------------------------------------------------
+        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+--------------------------------------------------------------------------------
+Map 1 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 2 ......   SUCCEEDED      1          1        0        0       0       0
+Reducer 3 ......   SUCCEEDED      1          1        0        0       0       0
+--------------------------------------------------------------------------------
+VERTICES: 03/03  [==========================>>] 100%  ELAPSED TIME: 8.59 s     
+--------------------------------------------------------------------------------
+OK
+1997	48
+1996	44
+1995	43
+1994	27
+1998	18
+Time taken: 24.851 seconds, Fetched: 5 row(s)
+hive> select t.year,count(*) as count 
+    > from (Select regexp_extract(movie_name,'([1-2][0-9][0-9][0-9])',1) as year
+    > from movies_part where genre="thriller") t group by year 
+    > order by count
+    > desc limit 5;
+Query ID = root_20161026023814_190cd175-0ccb-4c54-9af5-0dee3718789b
+Total jobs = 1
+Launching Job 1 out of 1
+
+
+Status: Running (Executing on YARN cluster with App id application_1477080051540_0016)
+
+--------------------------------------------------------------------------------
+        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+--------------------------------------------------------------------------------
+Map 1 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 2 ......   SUCCEEDED      1          1        0        0       0       0
+Reducer 3 ......   SUCCEEDED      1          1        0        0       0       0
+--------------------------------------------------------------------------------
+VERTICES: 03/03  [==========================>>] 100%  ELAPSED TIME: 8.55 s     
+--------------------------------------------------------------------------------
+OK
+NULL	251
+Time taken: 13.418 seconds, Fetched: 1 row(s)
+hive> 
+
+
+7.1 - logically movies_part would run faster if any query has properties based on genre
+7.2 movies_part actually runs faster except where all columns are selected with no where statement.	
+
+
+
+
+#8
+
+hive> create table movie_year_temp1 as
+    > Select movie_id, regexp_extract(movie_name,'([1-2][0-9][0-9][0-9])',1) as movie_year,
+    > substr(movie_name,1,length(movie_name)-6) as movie_title from movies_whole;
+Query ID = root_20161026172659_6875c737-c9ce-4fe3-8161-616347c96a17
+Total jobs = 1
+Launching Job 1 out of 1
+Tez session was closed. Reopening...
+Session re-established.
+
+
+Status: Running (Executing on YARN cluster with App id application_1477080051540_0018)
+
+--------------------------------------------------------------------------------
+        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+--------------------------------------------------------------------------------
+Map 1 ..........   SUCCEEDED      1          1        0        0       0       0
+--------------------------------------------------------------------------------
+VERTICES: 01/01  [==========================>>] 100%  ELAPSED TIME: 18.15 s    
+--------------------------------------------------------------------------------
+Moving data to: hdfs://sandbox.hortonworks.com:8020/apps/hive/warehouse/hive2.db/movie_year_temp1
+Table hive2.movie_year_temp1 stats: [numFiles=1, numRows=879, totalSize=23407, rawDataSize=22528]
+OK
+Time taken: 45.372 seconds
+hive> select * from movie_year_temp1
+    > limit 3;
+OK
+1	1995	Toy Story 
+2	1995	GoldenEye 
+3	1995	Four Rooms 
+Time taken: 2.213 seconds, Fetched: 3 row(s)
+hive> 
+
+#9
+hive> create table year_buckets1(movie_id int, movie_year string, movie_title string)
+    > clustered by (movie_year) into 8 buckets;
+OK
+
+#10
+hive> insert into table year_buckets1
+    > select movie_id,movie_year,movie_title
+    > from movie_year_temp1;
+Query ID = root_20161027000839_ea485544-9969-489f-b808-21101972948f
+Total jobs = 1
+Launching Job 1 out of 1
+Tez session was closed. Reopening...
+Session re-established.
+
+
+Status: Running (Executing on YARN cluster with App id application_1477080051540_0020)
+
+--------------------------------------------------------------------------------
+        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+--------------------------------------------------------------------------------
+Map 1 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 2 ......   SUCCEEDED      8          8        0        0       0       0
+--------------------------------------------------------------------------------
+VERTICES: 02/02  [==========================>>] 100%  ELAPSED TIME: 55.80 s    
+--------------------------------------------------------------------------------
+Loading data to table hive2.year_buckets1
+Table hive2.year_buckets1 stats: [numFiles=8, numRows=879, totalSize=23407, rawDataSize=22528]
+OK
+Time taken: 107.388 seconds
+hive> 
+
+#11
+
+hive> dfs -ls /apps/hive/warehouse/hive2.db/year_buckets1;
+Found 8 items
+-rwxrwxrwx   3 root hdfs        844 2016-10-27 00:09 /apps/hive/warehouse/hive2.db/year_buckets1/000000_0
+-rwxrwxrwx   3 root hdfs       1290 2016-10-27 00:09 /apps/hive/warehouse/hive2.db/year_buckets1/000001_0
+-rwxrwxrwx   3 root hdfs       2477 2016-10-27 00:09 /apps/hive/warehouse/hive2.db/year_buckets1/000002_0
+-rwxrwxrwx   3 root hdfs       3933 2016-10-27 00:09 /apps/hive/warehouse/hive2.db/year_buckets1/000003_0
+-rwxrwxrwx   3 root hdfs       4449 2016-10-27 00:09 /apps/hive/warehouse/hive2.db/year_buckets1/000004_0
+-rwxrwxrwx   3 root hdfs       4755 2016-10-27 00:09 /apps/hive/warehouse/hive2.db/year_buckets1/000005_0
+-rwxrwxrwx   3 root hdfs       3914 2016-10-27 00:09 /apps/hive/warehouse/hive2.db/year_buckets1/000006_0
+-rwxrwxrwx   3 root hdfs       1745 2016-10-27 00:09 /apps/hive/warehouse/hive2.db/year_buckets1/000007_0
+hive> 
+
+it created 8 folders, since we created 8 buckets while creating the table
+
+
+
+#12
+hive> select explode(histogram_numeric(int(movie_year),5)) as hist_year from
+    > 
+    > movie_year_temp;
+Query ID = root_20161027001137_513729b1-4ef1-4ffb-a3c3-b0f1a6e7e9a8
+Total jobs = 1
+Launching Job 1 out of 1
+
+
+Status: Running (Executing on YARN cluster with App id application_1477080051540_0020)
+
+--------------------------------------------------------------------------------
+        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+--------------------------------------------------------------------------------
+Map 1 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 2 ......   SUCCEEDED      1          1        0        0       0       0
+--------------------------------------------------------------------------------
+VERTICES: 02/02  [==========================>>] 100%  ELAPSED TIME: 13.69 s    
+--------------------------------------------------------------------------------
+OK
+{"x":1600.0,"y":1.0}
+{"x":1938.8076923076924,"y":26.0}
+{"x":1956.8437499999993,"y":32.0}
+{"x":1977.8955223880596,"y":67.0}
+{"x":1994.8313413014603,"y":753.0}
+Time taken: 18.539 seconds, Fetched: 5 row(s)
+hive> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
